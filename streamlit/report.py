@@ -18,7 +18,7 @@ def import_prep_data(file, player_list):
     :return: df with play items.
     """
 
-    structure_df = pd.read_csv(f"./Input Materials/csv/{file}")
+    structure_df = pd.read_csv(file)
 
     #structure_df= structure_df[-10:]
 
@@ -41,9 +41,6 @@ def import_prep_data(file, player_list):
         structure_df[[f'Player{i}Y']] = structure_df[[f'Player{i}Y']]*3.28084
 
     return structure_df
-
-
-scenario_df = import_prep_data("canada_v_hcd/1.csv", [1,2,3,4,5])
 
 ## plot
 def plot_basic(structure_df, players):
@@ -99,6 +96,7 @@ def plot_basic(structure_df, players):
 
     return ax.figure
 
+scenario_df = import_prep_data("autoparse_csv/canada_v_hcd_shotData1.csv", [1,2,3,4,5])
 
 ###############################################
 ################ Streamlit Display
@@ -123,11 +121,12 @@ st.markdown("""
             Data is generated from the Wisesport through their [Wisehockey platform](https://wisesport.com/hockey/), and provided to use by [HC Davos](https://www.hcd.ch/de/hockey-club-davos-startseite).
             A CSV file contains each action which occurs throughout the game, in a log style format. Data is ingested using a Pandas DataFrame object.          
 """)
-st.code("""
-        csv_full = pd.read_csv("rawData/rawData/canada_v_hcd.csv")
-""")
 
-sample_data_df = pd.read_csv("./Input Materials/rawData/canada_v_hcd.csv")
+st.code("""
+sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
+sample_data_df[0:20]
+""")
+sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
 sample_data_df[0:20]
 
 st.markdown("""
@@ -143,14 +142,14 @@ st.markdown("""
             - If the play is stopped and a faceoff occurs, the five-second duration is reset.
             
             First, the raw CSV event file is filtered to contain only events occuring during a powerplay. Note that events for a Home and Away team powerplay are seperately listed.
-            """)
+            """) #filtering md
 
 st.code("""
 data = csv_full[
     (csv_full["TeamStrengthType"] == "AwayPowerplay") | 
     (csv_full["TeamStrengthType"] == "HomePowerplay")
     ]
-""")
+""") #filtering code
 
 st.markdown("""
             Next, we select the rows within our dataset which correspond to shots - these for the basis of our analysis, and act as a way to search for events which would be useful for viewers to gain insight from.
@@ -161,18 +160,16 @@ st.code("""
 shot_rows = data[data["EventType"] == "Shot"]
 shot_rows = shot_rows.index
 shot_rows = shot_rows.tolist()
-""")
+""") #shot rows
 
-st.markdown(
-    """
+st.markdown("""
     Next, we define a series of adjustable parameters:
     - `n_seconds` defines how many seconds from the occurance of a shot the current structure goes. 
     - `scenario_number` defines a starting value when exporting scenarios as a csv. 
     - `game_name` defines a prefix to the scenario number when saving scenarios as csv.
     
     The below code snipped will process each shot to see whether it fits the scenario, and if it does, export it to csv format.
-    """
-)
+    """) # params md
 
 st.code("""
 for single_shot in shot_rows:       # reviews each shot which occurs during powerplay.
@@ -188,29 +185,27 @@ for single_shot in shot_rows:       # reviews each shot which occurs during powe
         play_data.to_csv(f"autoparse_csv/{game_name}_shotData{scenario_number}.csv") #exports scenarios which fit structure rules.
         print(f"Exported Scenario {scenario_number} to CSV")
         scenario_number = scenario_number+1
-""")
+""") # code parsing full game
 
-st.markdown(
-    """
+st.markdown("""
         ## Initial Visualisation
         Throughout this project, we project player data using the `hockey_rink` package. A rink is easily displayed using:
-""")
+""") ## md inital viz
 
 st.code("""
 rink = hockey_rink.IIHFRink()
 rink.draw()
 plt.show()
-""")
+""") #code inital viz
 
 rink = hr.IIHFRink()
 ax = rink.draw()
 st.pyplot(ax.figure)
 
-st.markdown(
-    """
+st.markdown("""
         ### Basic Visualisation
         We can now import a scenario, clean it, then project it on our rink plot. This scenario is from the Canada vs. HC Davos game at the 2024 Spengler Cup.
-""")
+""") # basic visualization
 
 ax = rink.draw(
     #display_range="defence", rotation=90
@@ -231,43 +226,69 @@ rink.scatter(
     x="EventStartX",
     y="EventStartY",
     color = "purple",
-    s=100
+    s=140
 )
-png = io.BytesIO()
-ax.figure.savefig(png, format="png", dpi=300)
 
 st.pyplot(ax.figure)
 
 st.markdown("""
 Next, we plot defensive players (as dots on the ice), passes (as straight lines) and puck movement (as wavy lines).
 This is the same scenario as above, just with additional data.
-""")
+""") #md describe more advanced plot with people on it. Maybe find a better scenario? or make the people bigger?
 
 img = plot_basic(scenario_df, [1,2,3,4,5])
 st.pyplot(img)
 
+st.markdown("""
+        ### Intermediate Data Visualization
+        :red-badge[TODO] More advanced viz with box structure & such.
+""") # More advanced viz with box & such
 
+st.markdown("""
+        ## Feedback from HC Davos
+""") #md feedback from HC Davos
+
+st.markdown("""
+        ## Final Data Visualization
+        :red-badge[TODO] Can import the code from App or take the screenshots.
+""") # Final Data Visualization
+
+st.markdown("""
+        ## Incorrect Steps
+        Throughout this project, several times, we persued avenues which we later found were incorrect steps. 
+        These scenarios helped us further develop our model, our method, and ways in which we present analysis of a single scenario.
+        
+        ### Processing to find Scenarios
+        One of the key targets of this project was to develop an automated method to turn the event model of an entire game into indiviual structured events which are useful for a coach to review for their teams' performance.
+        The definition of when a structure is achieved did not change, but the methodology did.  
+        
+        We knew that a structure could only occur when the play was in the attacking zone. The `EventType` parameter includes the event `BluelineCrossing`, which occurs whenever the puck crosses the blueline. 
+        To develop the model, it was assumed that data occuring between the blueline could be counted as "bookends", and that events that occured between blueline crossings could be counted as structure. 
+        After testing, edge cases were found where the model selected incorrect data. 
+        Edge cases that were found included when a powerplay ends while the attacking team is in the zone, or when a stoppage of play occurs (such as when the puck goes out of bounds or is stopped by the goaltender).
+        
+""")
 
 
 st.markdown("""
         ------
         ## Sections to write
-        - preprocessing steps
-            - filtering
-            - seperating coords & converting into ft, player name & number (as variable)
-        - Initial data vis
-            - rink package
-        - Feedback from HcDavos
-        - Final data viz
+        - preprocessing steps :red-badge[TODO]
+            - filtering :green-badge[Done]
+            - seperating coords & converting into ft, player name & number (as variable) :red-badge[TODO]
+        - Initial data vis :green-badge[Done]
+            - rink package :green-badge[Done]
+        - Feedback from HcDavos :red-badge[TODO]
+        - Final data viz :red-badge[TODO]
             - gallery with plots
             - tactical explaination of what happened, how this can be used for exaimination.
-        - steps which we took which were incorrect (thought process)
+        - steps which we took which were incorrect (thought process) :red-badge[TODO]
             - weird preprocessing method (with between blueline filtering)
             - How we attempted positions without history (mass defence plots)
             - Puckcontrol vs. pass
             - directions
-        - Unknowns and future steps
-        - Conclusion 
+        - Unknowns and future steps :red-badge[TODO]
+        - Conclusion :red-badge[TODO]
 
 """)
 
@@ -276,6 +297,10 @@ uploaded_file = st.file_uploader("Choose a file")
 if uploaded_file is not None:
     dataframe = pd.read_csv(uploaded_file)
     st.write(dataframe)
+
+#sample code to download an image
+png = io.BytesIO()
+ax.figure.savefig(png, format="png", dpi=300)
 
 st.download_button(
     label="Download Image",
