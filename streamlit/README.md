@@ -1,4 +1,4 @@
-# Pre-Shot Situation
+# Pre-Shot Situation (AI generated)
 
 Streamlit-App zur Analyse der Sekunden vor einem Powerplay-Schuss. Aus einem
 Spiel-CSV werden alle Schüsse in Überzahl (5v4 / 4v5) extrahiert; für einen
