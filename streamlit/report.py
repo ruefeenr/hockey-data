@@ -115,12 +115,14 @@ st.markdown("""
             AI Disclosure:
             -----
             ### Background + Objective:  
+            - Terminology specific to analysis
+            - Defensive structures provided :red-badge[TODO]
             
             -----
             ## Data Preprocessing
-            Data is generated from the Wisesport through their [Wisehockey platform](https://wisesport.com/hockey/), and provided to use by [HC Davos](https://www.hcd.ch/de/hockey-club-davos-startseite).
+            Data is generated from the Wisesport through their [Wisehockey platform](https://wisesport.com/hockey/), and provided to this project for use by [HC Davos](https://www.hcd.ch/de/hockey-club-davos-startseite).
             A CSV file contains each action which occurs throughout the game, in a log style format. Data is ingested using a Pandas DataFrame object.          
-""")
+""") ## Intro Page
 
 st.code("""
 sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
@@ -258,7 +260,7 @@ st.markdown("""
         Throughout this project, several times, we persued avenues which we later found were incorrect steps. 
         These scenarios helped us further develop our model, our method, and ways in which we present analysis of a single scenario.
         
-        ### Processing to find Scenarios
+        ### Scenario Discovering Algorithm
         One of the key targets of this project was to develop an automated method to turn the event model of an entire game into indiviual structured events which are useful for a coach to review for their teams' performance.
         The definition of when a structure is achieved did not change, but the methodology did.  
         
@@ -267,7 +269,45 @@ st.markdown("""
         After testing, edge cases were found where the model selected incorrect data. 
         Edge cases that were found included when a powerplay ends while the attacking team is in the zone, or when a stoppage of play occurs (such as when the puck goes out of bounds or is stopped by the goaltender).
         
+        ### Mass Player Plotting
+        In an attempt to visualize the defensive structures (Diamond, Box, Triangle+1), early plots incorporated the positions of each defensive player, during each event frame.
+        The goal was to show the viewer where players were positioned, what formation they took up, and how the offensive team was able to work against the structure to take a shot.
+
+""") ## incorrect steps
+st.image("images/mass_player_plotting.png")
+st.caption("An early attempt at plotting a structure scenario, including all defensive players.")
+
+st.markdown("""
+         As is visible in the above example, and in particular across longer events, there are too many points for a reader to follow which structure is employed by the defensive team.
+         As the puck and play shifts from one side of the ice to the other, the entire defensive structure moves along with it. As a result, this plotting method resulted in overlapping points, which do not tell a conlcusive story.
+         The method outlined to solve this issue is multifold: 
+         - A light opacity polygon connects all defensive players, to outline the defensive structure. It can show both the structure at the start and end of the play.
+         - Player positioning dots are connected using solid lines, in increasing opacity, which effectively plots an additional time dimension. The audience, as a result of this, can now see how the play developed over time through the movement of the puck and players.
+""") ## md mass player plotting 2
+
+
+st.markdown("""
+        ### Directional Arrows
+        During the intermediate stage of the project, we felt that adding directional arrows to player movements would give an additional dimmension of details about the actions players took throughout the play. 
+        Once implemented, the team came to the conclusion that the arrows did not add addititional useful information to the scenario, but rather added to clutter and disorganization that made the diagram harder to read.
+        Additionally, if a player stood still or multiple lines are captured for a single moment, arrows for a player would overlap. On occasion, some data points did not include directional data for some or all players, leading to a unconsistent visual.
+        
+        Example:   
+        """) ## md directional arrows
+
+st.image(
+ "images/improvements-arrows.png"
+) ## arrows image
+
+st.caption(
+    "Scenario with the inclusion of directional arrows for each player.",
+    text_alignment = 'left'
+) ## image caption
+
+st.markdown("""
+        
 """)
+
 
 
 st.markdown("""
@@ -283,10 +323,10 @@ st.markdown("""
             - gallery with plots
             - tactical explaination of what happened, how this can be used for exaimination.
         - steps which we took which were incorrect (thought process) :red-badge[TODO]
-            - weird preprocessing method (with between blueline filtering)
-            - How we attempted positions without history (mass defence plots)
+            - weird preprocessing method (with between blueline filtering) :green-badge[Done]
+            - How we attempted positions without history (mass defence plots) :green-badge[Done]
             - Puckcontrol vs. pass
-            - directions
+            - directions :green-badge[Done]
         - Unknowns and future steps :red-badge[TODO]
         - Conclusion :red-badge[TODO]
 
