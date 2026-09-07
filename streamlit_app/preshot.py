@@ -1,4 +1,5 @@
 # Standard Library
+import contextlib
 import re
 # hockey_rink nutzt urllib.request/urllib.error, ohne sie selbst zu importieren
 import urllib.error
@@ -10,6 +11,7 @@ import pandas as pd
 
 # Visualisierung
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 from matplotlib.patches import Polygon
 
@@ -528,6 +530,34 @@ def get_rink_view(pre_shot_df):
     return display_range, rotation, event_position
 
 
+@contextlib.contextmanager
+def skip_patch_limits():
+    """
+    Schaltet die Datengrenzen-Berechnung von matplotlib für Patches ab.
+
+    rink.draw legt rund 70 Polygone mit je einigen hundert Vertices an und
+    matplotlib löst für jedes davon in add_patch die Bezier-Extrema auf, um
+    dataLim zu aktualisieren - insgesamt etwa 60'000 Segmente. Die Grenzen
+    setzt hockey_rink danach per set_xlim/set_ylim ohnehin selbst, das
+    Ergebnis ist pixelidentisch und der Draw etwa zehnmal schneller.
+    """
+
+    original = getattr(Axes, "_update_patch_limits", None)
+
+    # Private API. Wird sie irgendwann umbenannt, zeichnen wir eben wieder
+    # langsam, statt die App mit einem AttributeError abzubrechen.
+    if original is None:
+        yield
+        return
+
+    Axes._update_patch_limits = lambda self, patch: None
+
+    try:
+        yield
+    finally:
+        Axes._update_patch_limits = original
+
+
 def plot_pre_shot_summary(
     pre_shot_df,
     attacking_goalie_ids=None,
@@ -550,11 +580,12 @@ def plot_pre_shot_summary(
         pre_shot_df
     )
 
-    rink.draw(
-        display_range=display_range,
-        rotation=rotation,
-        ax=ax
-    )
+    with skip_patch_limits():
+        rink.draw(
+            display_range=display_range,
+            rotation=rotation,
+            ax=ax
+        )
 
     # --------------------------------------------
     # Teams bestimmen
