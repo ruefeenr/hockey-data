@@ -3,13 +3,14 @@ import streamlit as st
 import hockey_rink as hr
 import matplotlib.pyplot as plt
 import io
+import datetime
 
-
+start_time = datetime.datetime.now()
 
 ###############################################
 ################ Utils
 ###############################################
-
+@st.cache_data
 def import_prep_data(file, player_list):
     """
 
@@ -43,6 +44,7 @@ def import_prep_data(file, player_list):
     return structure_df
 
 ## plot
+@st.cache_data
 def plot_basic(structure_df, players):
     """
     :param structure_df:
@@ -106,23 +108,60 @@ st.markdown("""
             # Finding Hockey Strategies with Data
             Authors: **Enrique Rüfenacht & Benjamin Jud**  
               
-            Sports Data Science  
-            Hochschule Luzern
-            2026-09-04  
+            Sports Data Analytics - FS2026    
+            Instructor: **Martin Rumo**  
+            Hochschule Luzern  
+            2026-09-04 :blue-badge[Update prior to submission]  
             
-            [GitHub Repo](https://github.com/ruefeenr/hockey-data)  
+            [GitHub Repo](https://github.com/ruefeenr/hockey-data) - run interactive Streamlit app with `streamlit run streamlit/app.py` from project directory.
             
-            AI Disclosure:
             -----
             ### Background + Objective:  
-            - Terminology specific to analysis
-            - Defensive structures provided :red-badge[TODO]
-            
+""") ## Intro Page up to glossary
+
+with st.expander("Glossary / Terms"):
+    st.markdown("""
+    - **Structure:** A structure, as defined in this project, refers to moments when the offensive team has established control in the offensive zone, and puck control remains uncontested by the opponent.
+         - Conditions: 
+            - A powerplay is occuring
+            - The puck is in the offensive zone for continous duration of at least 5 seconds, without leaving the zone.
+            - If the play is stopped and a faceoff occurs, the five-second duration is reset.
+    - **General Ice Hockey Terminology:** Wikipedia: [Glossary of ice hockey terms](https://en.wikipedia.org/wiki/Glossary_of_ice_hockey_terms)
+    """) ## glossary expander
+
+st.markdown("""
+            ### Objective:
+            The objective of this project is to provide a non-technical analysis tool for use by coaches or team analysts.
+            The primary focus is to identify defensive structures during a powerplay, and what offensive structures were used to create quality goal-scoring opportunities.
+            Additional sub-objectives include data processing and a scenario detection algorithm to decrease time or manual effort required to detect scenarios with useful information. 
+
+            #### Defensive structures (provided by HC Davos):
+            HC Davos provided three different primary penalty kill defensive structure which is in use throughout the National League. These structures can be visualized through the analysis tool.
+            - **Box:** the box structure is the classic penalty kill defensive structure historically used. It aims to protect inside ice between the faceoff dots from attacks, and forces attackers to play from the outside.
+            As plays move to the left or right of the ice, the entire box structure moves in unison.
+""") ## md box defensive structure
+st.image("images/pk_box_crop.png", caption="A traditional box penalty kill formation")
+
+st.markdown("""
+            - **Diamond:** the diamond structure works very similar to the box structure in principal. The goal is to protect the center of the ice from cross-ice passes or direct attacks.
+            The structure additionally places players near prime shooting locations, and has a dedicated player in front of the net to clear rebounds. 
+            While only two teams employed this strategy in the previous season, it is proven enormously successful and is likely to be the leading penalty kill structure this season.
+""") ## md diamond defensive structure
+st.image("images/pk_diamond_crop.png", caption="A diamond penalty kill formation")
+
+st.markdown("""
+            - **Pushdown Triangle:** this formation places a triangle to protect the inside, with a floating point man to chase the puck and give pressure to offensive playmakers.
+            The floating player rotates with the play, and the top player within the triangle pushes up and takes the role of the floating player. In the '25/'26 season, this was the most used structure with teams throughout the National League.
+""") ## md 3+1 defensive structure
+st.image("images/pk_pushdown_crop.png", caption="A triangular pushdown or 3+1 formation.")
+
+
+st.markdown("""
             -----
-            ## Data Preprocessing
+            ## Data Preprocessing 
             Data is generated from the Wisesport through their [Wisehockey platform](https://wisesport.com/hockey/), and provided to this project for use by [HC Davos](https://www.hcd.ch/de/hockey-club-davos-startseite).
-            A CSV file contains each action which occurs throughout the game, in a log style format. Data is ingested using a Pandas DataFrame object.          
-""") ## Intro Page
+            A CSV file contains each action which occurs throughout the game, in a log style format. Data is ingested using a Pandas DataFrame object.   
+""")# Data preprocessing
 
 st.code("""
 sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
@@ -238,8 +277,12 @@ Next, we plot defensive players (as dots on the ice), passes (as straight lines)
 This is the same scenario as above, just with additional data.
 """) #md describe more advanced plot with people on it. Maybe find a better scenario? or make the people bigger?
 
-img = plot_basic(scenario_df, [1,2,3,4,5])
-st.pyplot(img)
+@st.cache_data
+def img_plot_more_players():
+    img = plot_basic(scenario_df, [1, 2, 3, 4, 5])
+    return img
+
+st.pyplot(img_plot_more_players())
 
 st.markdown("""
         ### Intermediate Data Visualization
@@ -260,7 +303,7 @@ st.markdown("""
         Throughout this project, several times, we persued avenues which we later found were incorrect steps. 
         These scenarios helped us further develop our model, our method, and ways in which we present analysis of a single scenario.
         
-        ### Scenario Discovering Algorithm
+        ### Scenario Discovery Algorithm
         One of the key targets of this project was to develop an automated method to turn the event model of an entire game into indiviual structured events which are useful for a coach to review for their teams' performance.
         The definition of when a structure is achieved did not change, but the methodology did.  
         
@@ -270,12 +313,11 @@ st.markdown("""
         Edge cases that were found included when a powerplay ends while the attacking team is in the zone, or when a stoppage of play occurs (such as when the puck goes out of bounds or is stopped by the goaltender).
         
         ### Mass Player Plotting
-        In an attempt to visualize the defensive structures (Diamond, Box, Triangle+1), early plots incorporated the positions of each defensive player, during each event frame.
+        In an attempt to visualize the defensive structures (Diamond, Box, Pushdown triangle), early plots incorporated the positions of each defensive player, during each event frame.
         The goal was to show the viewer where players were positioned, what formation they took up, and how the offensive team was able to work against the structure to take a shot.
 
 """) ## incorrect steps
-st.image("images/mass_player_plotting.png")
-st.caption("An early attempt at plotting a structure scenario, including all defensive players.")
+st.image("images/mass_player_plotting.png", caption="An early attempt at plotting a structure scenario, including all defensive players.")
 
 st.markdown("""
          As is visible in the above example, and in particular across longer events, there are too many points for a reader to follow which structure is employed by the defensive team.
@@ -296,23 +338,31 @@ st.markdown("""
         """) ## md directional arrows
 
 st.image(
- "images/improvements-arrows.png"
+ "images/improvements-arrows.png",
+"Scenario with the inclusion of directional arrows for each player"
 ) ## arrows image
 
-st.caption(
-    "Scenario with the inclusion of directional arrows for each player.",
-    text_alignment = 'left'
-) ## image caption
+st.markdown("""
+        ## Unknowns & Future Steps :red-badge[ToDo]
+""")
 
 st.markdown("""
-        
+        ## Conclusion :red-badge[ToDo]
 """)
 
 
 
 st.markdown("""
+            ### AI Disclosure:
+            Throughout this project, artificial intelligence was used for the purposes of code troubleshooting and code completion. 
+            AI was also used to converting existing (handwritten) code from the interactive Jupyter format into the interactive Streamlit format. 
+            Lastly, AI was used to automatically generate a ReadMe file for the GitHub repo.
+""")
+
+st.markdown("""
         ------
         ## Sections to write
+        - Background / Objectives :green-badge[Done]
         - preprocessing steps :red-badge[TODO]
             - filtering :green-badge[Done]
             - seperating coords & converting into ft, player name & number (as variable) :red-badge[TODO]
@@ -322,7 +372,7 @@ st.markdown("""
         - Final data viz :red-badge[TODO]
             - gallery with plots
             - tactical explaination of what happened, how this can be used for exaimination.
-        - steps which we took which were incorrect (thought process) :red-badge[TODO]
+        - steps which we took which were incorrect (thought process) :yellow-badge[In-Progress]
             - weird preprocessing method (with between blueline filtering) :green-badge[Done]
             - How we attempted positions without history (mass defence plots) :green-badge[Done]
             - Puckcontrol vs. pass
@@ -332,20 +382,5 @@ st.markdown("""
 
 """)
 
-
-uploaded_file = st.file_uploader("Choose a file")
-if uploaded_file is not None:
-    dataframe = pd.read_csv(uploaded_file)
-    st.write(dataframe)
-
-#sample code to download an image
-png = io.BytesIO()
-ax.figure.savefig(png, format="png", dpi=300)
-
-st.download_button(
-    label="Download Image",
-    data=png,
-    file_name="figure.png",
-    mime="image/png",
-    icon=":material/download:",
-)
+load_time = datetime.datetime.now() - start_time
+f"Load time: {load_time.seconds}s"
