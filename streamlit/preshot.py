@@ -542,7 +542,14 @@ def skip_patch_limits():
     Ergebnis ist pixelidentisch und der Draw etwa zehnmal schneller.
     """
 
-    original = Axes._update_patch_limits
+    original = getattr(Axes, "_update_patch_limits", None)
+
+    # Private API. Wird sie irgendwann umbenannt, zeichnen wir eben wieder
+    # langsam, statt die App mit einem AttributeError abzubrechen.
+    if original is None:
+        yield
+        return
+
     Axes._update_patch_limits = lambda self, patch: None
 
     try:
