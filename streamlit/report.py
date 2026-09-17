@@ -104,6 +104,31 @@ scenario_df = import_prep_data("autoparse_csv/canada_v_hcd_shotData1.csv", [1,2,
 ################ Streamlit Display
 ###############################################
 
+## streamlit sidebar
+st.sidebar.markdown("""
+    **Table of Contents**
+    - [Objective](#objective)
+        - [Defensive Structures](#defensive-structures-provided-by-hc-davos)
+    - [Data Preprocessing](#data-preprocessing)
+        - [Filtering](#filtering)
+    - [Initial Visualization](#initial-visualisation)
+        - [Basic Visualization](#basic-visualisation)
+        - [Intermediate Data Visualization](#intermediate-data-visualization)
+        - [Incorporation of Interactive Elements](#incorporation-of-interactive-elements)
+    - [Feedback from HC Davos :red-badge[To Write]](#feedback-from-hc-davos)
+    - [Final Data Visualization :red-badge[To Write]](#final-data-visualization)
+    - [Incorrect Steps](#incorrect-steps)
+        - [Scenario Discovery Algorithm](#scenario-discovery-algorithm)
+        - [Mass Player Plotting](#mass-player-plotting)
+        - [Directional Arrows](#directional-arrows)
+    - [Future Steps :red-badge[To Write]](#future-steps)
+    - [Conclusion :yellow-badge[Review]](#conclusion)
+    - [AI Disclosure](#ai-disclosure)
+        
+        
+    
+""")
+
 st.markdown("""
             # Finding Hockey Strategies with Data
             Authors: **Enrique Rüfenacht & Benjamin Jud**  
@@ -111,12 +136,13 @@ st.markdown("""
             Sports Data Analytics - FS2026    
             Instructor: **Martin Rumo**  
             Hochschule Luzern  
-            2026-09-04 :blue-badge[Update prior to submission]  
+            2026-09-04 :blue-badge[Update prior to submission]   
             
-            [GitHub Repo](https://github.com/ruefeenr/hockey-data) - run interactive Streamlit app with `streamlit run streamlit/app.py` from project directory.
+            [GitHub Repo](https://github.com/ruefeenr/hockey-data) - run interactive Streamlit app with `streamlit run streamlit/app.py` from project directory.  
+            [Web App](https://hockey-data-ekm32rc9v2uxnnnpg23vly.streamlit.app/)
             
             -----
-            ### Background + Objective:  
+            
 """) ## Intro Page up to glossary
 
 with st.expander("Glossary / Terms"):
@@ -286,8 +312,56 @@ st.pyplot(img_plot_more_players())
 
 st.markdown("""
         ### Intermediate Data Visualization
-        :red-badge[TODO] More advanced viz with box structure & such.
-""") # More advanced viz with box & such
+        Developments in the visualization progressed well, to a point where the team felt that the visualizations were able to provide an informative overview of any single play. Several new, key elements include:
+        - **Differentiation between passing and puck movements:** Puck movements are shown in a wavy black arrow, while passes are displayed in solid black lines. Initially, both passes were in a red color, but this was changed to avoid confusion against ice markings.
+        - **Shot Location:** The location of the where the shot was taken is marked on the map with a yellow star. Additionally, the legend of the visual provides information on what the result of that shot was - a goal, a save, block, or a miss.
+        - **Player Tracks:** Player tracks were added to add an element of time to the visual. For all players, the initial location is plotted with a low opacity (light colored), and as the play progressed, subsequent locations were plotted in with higher opacity values.
+            Players are color coded to their team (either purple or green, chosen to avoid clashing against other colored elements of the visual).
+            Showing the movements of the players and the puck alike allows the viewer to visually identify how the play evolved, and how players shifted their positions.
+        - **Structure Shading:** Shading was implemented to highlight and visually identify the structure of the defensive team for the viewer. Like the player tracks, the shading is time dependant, highlighting the first event frame in the lightest color and the last event frame in the darkest color.
+                Plotting the structures from multiple time moments additionally gives the benefit of showing overlapping areas in darker colors, as those are locations which have been under continous control by the defensive team. This is well shown in example 2. :blue-badge[Reference]
+                This structure was challenging to implement, as the algorithm had to be able to identify which players were relevant to the scenario as the goaltender is always to be excluded.         
+        
+        **Scenario 1**  
+        Scenario 1 shows the defending team likely running a 3+1 pushdown structure. At the start of the sequence, you can see :green[players 24], :green[3], and :green[19] in a triangle formation, with :green[player 86] playing up high. As the sequence evolves, the puck shifts from the left side of the ice to the right. 
+        :green[Player 19] takes up the high spot, while :green[86] slides to the right to cover the high center.   
+        
+""") # Intermediate (final?) dataviz
+
+st.image("images/scenario1.jpeg", caption='Scenario 1')
+
+st.markdown("""
+        From the visual, we can also see an interesting opportunity for the offensive team, if :violet[player 46] had not chosen to shoot. Focusing on the left side at the play, attacking :violet[player 44] makes the pass to the point, before slowly sliding into the top of the circle.
+        As the puck is moved to the right-hand side of the ice, the :green[defensive] players covering the left side of the ice follow into the center. As we come to the last frame of the play, :violet[player 44] is nicely positioned in a prime shooting location at the top of the circle, with a clear line to receive
+        a pass from teammate, :violet[player 46], for a one-timer attempt. Attacking :violet[player 65] is standing by near the goaltender, in a prime position to quickly get to any loose rebounds.  
+        
+        **Scenario 2:**   
+        Scenario 2 shows the defensive team playing a tight box formation. In this scenario, the puck is moved from attacking :violet[player 96] down in the corner to :violet[16], in the point position. :violet[Player 16] skates for several strides, before shooting the puck to the front of the net.
+        From analyzing the locations of the players throughout this structure set-up, we can see why :violet[player 16] chose to shoot: attacking :violet[player 19] moves from beside the net to the front of the net, likely screening the goaltenders view.
+        At this time, defensive :green[player 90] leaves his spot by the net, moving to the right faceoff point, leaving :violet[19] alone in front of the net.
+        Likely, :violet[player 16] noticed this, and chose to take the shot, as there is a high likelihood that teammate :violet[19] could gain access to the rebound as the only player in front of the net, creating a good scoring opportunity.
+""")
+
+st.image("images/scenario2.jpeg", caption='Scenario 2')
+
+st.markdown("""
+        ### Incorporation of Interactive Elements
+        The app includes several interactive elements which aid the user in manipulating the scenario to display the appropriate information. 
+        The goal of the interactive elements is such that the viewer can chose which visual elements are important to analyze the current scenario. Additionally, it allows for the rapid selection of scenarios for analysis.
+        
+        **Interactive Workflow**  
+        Firstly, the user is prompted to upload their game events file, in CSV format. The app automatically sorts through all events, and picks out a list of powerplay scenarios which fit the definition from earlier.   
+        Next, the user can use the following interactive elements to change the visual:  
+        
+        - **Scenario Selector:** A drop down menu allows the user to select the scenario. Each item row contains the period, match-clock, and player who shot the puck. Additionally, it shows the outcome of the shot.  
+        - **Seconds Prior to Shot:** This slider allows the user to select how many seconds prior to the shot should be displayed.
+        - **Passes, Puck Control:** Allows the user to select whether the pases and puck control arrows are shown.
+        - **Attacker, Defender Trails:** Allows the user to toggle whether players and their trails (where they were located) are shown.
+        - **Start, End Polygons:** The polygons represent the structure areas in control by the defence team. Toggling these allows for showing or hiding the structure.
+        - **Attacker, Defender Frames:** The frames sliders can allow the user to toggle how many frames of movement they wish to see from the attackers or defenders.      
+""") ## interactive elements
+
+st.image("images/interactive_elements.jpg", caption="Interactive elements which the user can toggle. Panel 1 shows the scenario selection panel being closed, and Panel 2 shows it being open.")
 
 st.markdown("""
         ## Feedback from HC Davos
@@ -343,12 +417,21 @@ st.image(
 ) ## arrows image
 
 st.markdown("""
-        ## Unknowns & Future Steps :red-badge[ToDo]
-""")
+        ## Future Steps 
+        Later :red-badge[ToDo - after HC Davos feedback]
+""") #future steps
 
 st.markdown("""
-        ## Conclusion :red-badge[ToDo]
-""")
+        ## Conclusion 
+        At the start of the project, the request that came from HC Davos was to use analytics and statistics to better inform them of where other teams were vonurable, and how HC Davos could adjust their powerplay strategy to stay competitive in the league. Unfortunately, due to the limited amounts of data provided, we were unable to directly fulfil this request.
+        Despite this, we were able to develop an analytics platform that we belive has the value to deliver on valuable insights for any team which were to employ it. The platform allows any coach to upload a game's event dataset, and within seconds, they are able to analyze their teams performance throughout the game.
+        One of the strengths of this platform is that it removes all technical understanding to be able to access the data, allowing it to be used by any coach or player to quickly access new insights and which may not be accessible through traditional video platforms.
+        
+        Hockey is a very fast moving game, where plays develop extremely quickly and with fluidity. Coming into this project, and particularly once we knew that there would only be limited data access, we knew that we that a succesful project would hinge on developing a platform rather than trying to draw insights from only three games. 
+        The platform approach allowed us to prepare the infrastructure, while a coach is able to apply their deep understanding and knowledge of hockey on top of the data - ultimately it is not just about building an insights platform, but also opening access to those who have the ability to turn interactive plots into real, game-ready insights.     
+        
+        Lastly, we want to provide a large thank you to HC Davos, in particular to Dylan Stanley and Martin Zöllner for providing the project topic, sample data, and expertise.
+""") #conclusion
 
 
 
@@ -357,28 +440,28 @@ st.markdown("""
             Throughout this project, artificial intelligence was used for the purposes of code troubleshooting and code completion. 
             AI was also used to converting existing (handwritten) code from the interactive Jupyter format into the interactive Streamlit format. 
             Lastly, AI was used to automatically generate a ReadMe file for the GitHub repo.
-""")
+""") # ai disclosure
+
 
 st.markdown("""
         ------
         ## Sections to write
         - Background / Objectives :green-badge[Done]
-        - preprocessing steps :red-badge[TODO]
+        - preprocessing steps :green-badge[Done]
             - filtering :green-badge[Done]
-            - seperating coords & converting into ft, player name & number (as variable) :red-badge[TODO]
         - Initial data vis :green-badge[Done]
             - rink package :green-badge[Done]
         - Feedback from HcDavos :red-badge[TODO]
-        - Final data viz :red-badge[TODO]
+        - Final data viz :green-badge[Done - needs to be renamed from intermediate vis]
             - gallery with plots
             - tactical explaination of what happened, how this can be used for exaimination.
         - steps which we took which were incorrect (thought process) :yellow-badge[In-Progress]
             - weird preprocessing method (with between blueline filtering) :green-badge[Done]
             - How we attempted positions without history (mass defence plots) :green-badge[Done]
-            - Puckcontrol vs. pass
+            - Puckcontrol vs. pass :red-bagdge[Todo? - this section is getting really long]
             - directions :green-badge[Done]
-        - Unknowns and future steps :red-badge[TODO]
-        - Conclusion :red-badge[TODO]
+        - future steps :red-badge[TODO - wait for HCD advice]
+        - Conclusion :red-badge[TODO - current item to write]
 
 """)
 
