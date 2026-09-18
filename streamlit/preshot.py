@@ -12,7 +12,7 @@ import pandas as pd
 # Visualisierung
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
-from matplotlib.lines import Line2Dß
+from matplotlib.lines import Line2D
 from matplotlib.patches import Polygon
 
 # Hockey rink
