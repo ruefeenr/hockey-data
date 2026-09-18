@@ -12,14 +12,14 @@ import pandas as pd
 # Visualisierung
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
-from matplotlib.lines import Line2D
+from matplotlib.lines import Line2Dß
 from matplotlib.patches import Polygon
 
 # Hockey rink
-from hockey_rink import NHLRink
+from hockey_rink import IIHFRink
 
 # Setup
-rink = NHLRink()
+rink = IIHFRink()
 
 # Attacker Colors
 attacker_color = "m"

@@ -4,8 +4,12 @@ import hockey_rink as hr
 import matplotlib.pyplot as plt
 import io
 import datetime
+from pathlib import Path
 
 start_time = datetime.datetime.now()
+
+# report.py lives in streamlit/; data files (csv, images, autoparse_csv) are at the repo root.
+ROOT = Path(__file__).resolve().parent.parent
 
 ###############################################
 ################ Utils
@@ -98,7 +102,7 @@ def plot_basic(structure_df, players):
 
     return ax.figure
 
-scenario_df = import_prep_data("autoparse_csv/canada_v_hcd_shotData1.csv", [1,2,3,4,5])
+scenario_df = import_prep_data(ROOT / "autoparse_csv/canada_v_hcd_shotData1.csv", [1,2,3,4,5])
 
 ###############################################
 ################ Streamlit Display
@@ -166,20 +170,20 @@ st.markdown("""
             - **Box:** the box structure is the classic penalty kill defensive structure historically used. It aims to protect inside ice between the faceoff dots from attacks, and forces attackers to play from the outside.
             As plays move to the left or right of the ice, the entire box structure moves in unison.
 """) ## md box defensive structure
-st.image("images/pk_box_crop.png", caption="A traditional box penalty kill formation")
+st.image(str(ROOT / "images/pk_box_crop.png"), caption="A traditional box penalty kill formation")
 
 st.markdown("""
             - **Diamond:** the diamond structure works very similar to the box structure in principal. The goal is to protect the center of the ice from cross-ice passes or direct attacks.
             The structure additionally places players near prime shooting locations, and has a dedicated player in front of the net to clear rebounds. 
             While only two teams employed this strategy in the previous season, it is proven enormously successful and is likely to be the leading penalty kill structure this season.
 """) ## md diamond defensive structure
-st.image("images/pk_diamond_crop.png", caption="A diamond penalty kill formation")
+st.image(str(ROOT / "images/pk_diamond_crop.png"), caption="A diamond penalty kill formation")
 
 st.markdown("""
             - **Pushdown Triangle:** this formation places a triangle to protect the inside, with a floating point man to chase the puck and give pressure to offensive playmakers.
             The floating player rotates with the play, and the top player within the triangle pushes up and takes the role of the floating player. In the '25/'26 season, this was the most used structure with teams throughout the National League.
 """) ## md 3+1 defensive structure
-st.image("images/pk_pushdown_crop.png", caption="A triangular pushdown or 3+1 formation.")
+st.image(str(ROOT / "images/pk_pushdown_crop.png"), caption="A triangular pushdown or 3+1 formation.")
 
 
 st.markdown("""
@@ -193,7 +197,7 @@ st.code("""
 sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
 sample_data_df[0:20]
 """)
-sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
+sample_data_df = pd.read_csv(ROOT / "csv/canada_v_hcd/canada_v_hcd.csv")
 sample_data_df[0:20]
 
 st.markdown("""
@@ -270,6 +274,12 @@ ax = rink.draw()
 st.pyplot(ax.figure)
 
 st.markdown("""
+**Note:** The Spengler Cup rink in Davos is wider than an NHL rink. 
+Because the visualization uses a standardized IIHF rink while coordinate systems may differ between datasets, 
+some player positions near the boards can appear outside the displayed rink.
+""")
+
+st.markdown("""
         ### Basic Visualisation
         We can now import a scenario, clean it, then project it on our rink plot. This scenario is from the Canada vs. HC Davos game at the 2024 Spengler Cup.
 """) # basic visualization
@@ -328,7 +338,7 @@ st.markdown("""
         
 """) # Intermediate (final?) dataviz
 
-st.image("images/scenario1.jpeg", caption='Scenario 1')
+st.image(str(ROOT / "images/scenario1.jpeg"), caption='Scenario 1')
 
 st.markdown("""
         From the visual, we can also see an interesting opportunity for the offensive team, if :violet[player 46] had not chosen to shoot. Focusing on the left side at the play, attacking :violet[player 44] makes the pass to the point, before slowly sliding into the top of the circle.
@@ -342,7 +352,7 @@ st.markdown("""
         Likely, :violet[player 16] noticed this, and chose to take the shot, as there is a high likelihood that teammate :violet[19] could gain access to the rebound as the only player in front of the net, creating a good scoring opportunity.
 """)
 
-st.image("images/scenario2.jpeg", caption='Scenario 2')
+st.image(str(ROOT / "images/scenario2.jpeg"), caption='Scenario 2')
 
 st.markdown("""
         ### Incorporation of Interactive Elements
@@ -361,7 +371,9 @@ st.markdown("""
         - **Attacker, Defender Frames:** The frames sliders can allow the user to toggle how many frames of movement they wish to see from the attackers or defenders.      
 """) ## interactive elements
 
-st.image("images/interactive_elements.jpg", caption="Interactive elements which the user can toggle. Panel 1 shows the scenario selection panel being closed, and Panel 2 shows it being open.")
+_interactive_img = ROOT / "images/interactive_elements.jpg"
+if _interactive_img.exists():
+    st.image(str(_interactive_img), caption="Interactive elements which the user can toggle. Panel 1 shows the scenario selection panel being closed, and Panel 2 shows it being open.")
 
 st.markdown("""
         ## Feedback from HC Davos
@@ -391,7 +403,7 @@ st.markdown("""
         The goal was to show the viewer where players were positioned, what formation they took up, and how the offensive team was able to work against the structure to take a shot.
 
 """) ## incorrect steps
-st.image("images/mass_player_plotting.png", caption="An early attempt at plotting a structure scenario, including all defensive players.")
+st.image(str(ROOT / "images/mass_player_plotting.png"), caption="An early attempt at plotting a structure scenario, including all defensive players.")
 
 st.markdown("""
          As is visible in the above example, and in particular across longer events, there are too many points for a reader to follow which structure is employed by the defensive team.
@@ -412,7 +424,7 @@ st.markdown("""
         """) ## md directional arrows
 
 st.image(
- "images/improvements-arrows.png",
+ str(ROOT / "images/improvements-arrows.png"),
 "Scenario with the inclusion of directional arrows for each player"
 ) ## arrows image
 
