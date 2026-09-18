@@ -274,12 +274,6 @@ ax = rink.draw()
 st.pyplot(ax.figure)
 
 st.markdown("""
-**Note:** The Spengler Cup rink in Davos is wider than an NHL rink. 
-Because the visualization uses a standardized IIHF rink while coordinate systems may differ between datasets, 
-some player positions near the boards can appear outside the displayed rink.
-""")
-
-st.markdown("""
         ### Basic Visualisation
         We can now import a scenario, clean it, then project it on our rink plot. This scenario is from the Canada vs. HC Davos game at the 2024 Spengler Cup.
 """) # basic visualization
