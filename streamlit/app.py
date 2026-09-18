@@ -112,7 +112,7 @@ def render_visualisation(
     # --------------------------------------------
     st.sidebar.header("Anzeige")
 
-    show_passes = st.sidebar.checkbox("Passes", value=True)
+    show_passes = st.sidebar.checkbox("Passes", value=False)
     show_puck_control = st.sidebar.checkbox("PuckControl", value=True)
     show_attacker_trails = st.sidebar.checkbox("Attacker trails", value=True)
     show_defender_trails = st.sidebar.checkbox("Defender trails", value=True)
@@ -133,7 +133,9 @@ def render_visualisation(
         max_value=max_frame,
         value=max_frame,
         step=1,
-        key=f"attacker_frame_{slider_suffix}"
+        key=f"attacker_frame_{slider_suffix}",
+        help="Steuert auch, bis zu welchem Frame Pässe und PuckControl "
+             "gezeichnet werden. Der Schuss bleibt immer sichtbar."
     )
 
     defender_frame = st.sidebar.slider(
@@ -188,7 +190,7 @@ shots = parsing.list_shots(data)
 
 if not shots:
     st.warning(
-        "Keine Powerplay-Schüsse gefunden "
+        "Keine Schüsse des Teams in Überzahl gefunden "
         f"({' / '.join(parsing.POWERPLAY_STRENGTHS)})."
     )
     st.stop()

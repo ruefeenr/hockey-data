@@ -604,6 +604,31 @@ def plot_pre_shot_summary(
         row = pre_shot_df.iloc[i]
         event_df = pre_shot_df.iloc[[i]]
 
+        # Shot
+        # Das Ziel der Sequenz, darum unabhängig vom Slider immer sichtbar
+        if row["EventType"] == "Shot":
+            rink.scatter(
+                data=event_df,
+                x="EventStartX_ft",
+                y="EventStartY_ft",
+                s=260,
+                marker="*",
+                color="gold",
+                edgecolors="black",
+                zorder=7,
+                ax=ax
+            )
+
+            continue
+
+        # Puckaktionen gehören zum angreifenden Team und folgen darum
+        # demselben Frame wie dessen Bewegungsspuren
+        if (
+            attacker_frame is not None
+            and pre_shot_df.index[i] > attacker_frame
+        ):
+            continue
+
         if (
             show_passes
             and row["EventType"] == "PuckControl"
@@ -650,20 +675,6 @@ def plot_pre_shot_summary(
                 length_includes_head=True,
                 color=pass_color,
                 alpha=1,
-                ax=ax
-            )
-
-        # Shot
-        elif row["EventType"] == "Shot":
-            rink.scatter(
-                data=event_df,
-                x="EventStartX_ft",
-                y="EventStartY_ft",
-                s=260,
-                marker="*",
-                color="gold",
-                edgecolors="black",
-                zorder=7,
                 ax=ax
             )
 

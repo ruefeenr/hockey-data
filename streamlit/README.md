@@ -19,7 +19,7 @@ hockey_rink 1.1.
 ## Starten
 
 ```bash
-cd streamlit_app
+cd streamlit
 streamlit run app.py
 ```
 
@@ -30,11 +30,15 @@ darum aus dem Ordner `streamlit_app/` gestartet werden.
 
 1. Match-CSV über den Uploader laden.
 2. In der Sidebar unter **Szenario** einen Powerplay-Schuss wählen. Das Label
-   zeigt Periode, Spielzeit, Schütze und Ergebnis.
+   zeigt Periode, Spielzeit, Schütze und Ergebnis. Gelistet werden nur Schüsse
+   des Teams in Überzahl – Konter des Unterzahl-Teams laufen in die andere
+   Richtung und passen nicht zu den Rollen der Visualisierung.
 3. **Sekunden vor dem Schuss** legt die Fensterlänge fest (1–15 s). Liegt im
-   Fenster ein `Faceoff` oder `BluelineCrossing`, beginnt es direkt danach –
-   das ausgewertete Fenster kann darum kürzer sein als der Regler. Die Caption
-   über der Grafik weist darauf hin.
+   Fenster ein `Faceoff`, ein `BluelineCrossing` oder eine Puckeroberung des
+   Powerplay-Teams, beginnt es direkt dort – das ausgewertete Fenster kann
+   darum kürzer sein als der Regler. Die Caption über der Grafik weist darauf
+   hin. Das Fenster endet immer beim Schuss, obwohl `MatchClock` nur Sekunden
+   auflöst und in derselben Sekunde noch Abpraller folgen können.
 4. Unter **Anzeige** einzelne Ebenen ein- und ausschalten: Pässe,
    Puck-Kontrolle, Laufwege beider Teams, Start- und Schuss-Polygon.
 5. Unter **Frames** lassen sich die Laufwege von Angriff und Verteidigung
@@ -51,6 +55,8 @@ Erwartet wird ein Event-CSV mit einer Zeile pro Event. Relevante Spalten:
 |---|---|
 | `Period`, `MatchClock`, `Timestamp` | Zeitachse; `MatchClock` in Sekunden, aufwärts zählend |
 | `EventType` | `Shot`, `Pass`, `PuckControl`, `Faceoff`, `Clear`, `BluelineCrossing` |
+| `EventPrimaryTeam` | `Home` / `Away`; grenzt die Schussliste auf das Team in Überzahl ein |
+| `PuckControlState` | `HomeControl` / `AwayControl` / `Loose` / `Contested`; schneidet das Fenster am letzten Besitzwechsel ab |
 | `TeamStrength` | Filter auf `5v4` / `4v5` |
 | `TeamStrengthType` | `HomePowerplay` / `AwayPowerplay`, bestimmt die Teamrollen |
 | `EventPosition` | `HomeTeamZone` / `AwayTeamZone` / `NeutralZone`, richtet das Rink aus |
