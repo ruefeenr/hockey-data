@@ -1,13 +1,13 @@
 # Pre-Shot Situation
 
-> **Hinweis:** Dieses README ist eine **KI-generierte Zusammenfassung** des
-> Projekts. Es beschreibt den Stand des Codes, ersetzt aber keine manuelle
-> Prüfung.
+> **Note:** This README is an **AI-generated summary** of the project. It
+> describes the current state of the code, but it does not replace a manual
+> review.
 
-Streamlit-App zur Analyse der Sekunden vor einem Powerplay-Schuss. Aus einem
-Spiel-CSV werden alle Schüsse in Überzahl (5v4 / 4v5) extrahiert; für einen
-ausgewählten Schuss zeichnet die App die Laufwege beider Teams, die
-Puck-Aktionen und die Verteidigungsstruktur auf ein IIHF-Rink.
+Streamlit app for analysing the seconds before a power-play shot. From a match
+CSV it extracts every shot on a man advantage (5v4 / 4v5); for a selected shot
+the app draws both teams' skating paths, puck actions, and the defensive
+structure on an IIHF rink.
 
 ## Setup
 
@@ -17,105 +17,119 @@ source .venv/bin/activate
 pip install streamlit pandas numpy matplotlib hockey_rink
 ```
 
-Entwickelt mit Streamlit 1.63, pandas 3.0, matplotlib 3.11, numpy 2.5 und
+Developed with Streamlit 1.63, pandas 3.0, matplotlib 3.11, numpy 2.5, and
 hockey_rink 1.1.
 
-## Starten
+## Running
 
 ```bash
 cd streamlit
 streamlit run app.py
 ```
 
-`parsing.py` und `preshot.py` werden als lokale Module importiert, die App muss
-darum aus dem Ordner `streamlit/` gestartet werden.
+`parsing.py` and `preshot.py` are imported as local modules, so the app must be
+started from the `streamlit/` directory.
 
-## Bedienung
+Project documentation (objectives, preprocessing, visualisation steps, and
+known mistakes) lives in `report.py`, itself a Streamlit app:
 
-1. Match-CSV über den Uploader laden.
-2. In der Sidebar unter **Szenario** einen Powerplay-Schuss wählen. Das Label
-   zeigt Periode, Spielzeit, Schütze und Ergebnis. Gelistet werden nur Schüsse
-   des Teams in Überzahl – Konter des Unterzahl-Teams laufen in die andere
-   Richtung und passen nicht zu den Rollen der Visualisierung.
-3. **Sekunden vor dem Schuss** legt die Fensterlänge fest (1–15 s). Liegt im
-   Fenster ein `Faceoff`, ein `BluelineCrossing` oder eine Puckeroberung des
-   Powerplay-Teams, beginnt es direkt dort – das ausgewertete Fenster kann
-   darum kürzer sein als der Regler. Die Caption über der Grafik weist darauf
-   hin. Das Fenster endet immer beim Schuss, obwohl `MatchClock` nur Sekunden
-   auflöst und in derselben Sekunde noch Abpraller folgen können.
-4. Unter **Anzeige** einzelne Ebenen ein- und ausschalten: Pässe,
-   Puck-Kontrolle, Laufwege beider Teams, Start- und Schuss-Polygon.
-5. Unter **Frames** lassen sich die Laufwege von Angriff und Verteidigung
-   unabhängig voneinander bis zu einem Zeitpunkt abspielen. Die Endposition
-   jedes Spielers bleibt immer sichtbar.
-6. Die Grafik lässt sich als PNG herunterladen, im Debug-Bereich zusätzlich das
-   Szenario als CSV.
+```bash
+cd streamlit
+streamlit run report.py
+```
 
-## Datenformat
+If `app.py` is already running on port 8501, use another port:
 
-Erwartet wird ein Event-CSV mit einer Zeile pro Event. Relevante Spalten:
+```bash
+streamlit run report.py --server.port 8502
+```
 
-| Spalte | Bedeutung |
+## Usage
+
+1. Load a match CSV via the uploader.
+2. In the sidebar under **Szenario**, pick a power-play shot. The label shows
+   period, game time, shooter, and result. Only shots by the team on the
+   power play are listed – shorthanded counters travel the other way and do
+   not match the visualisation roles.
+3. **Sekunden vor dem Schuss** sets the window length (1–15 s). If the window
+   contains a `Faceoff`, a `BluelineCrossing`, or a puck recovery by the
+   power-play team, it starts there – so the evaluated window can be shorter
+   than the slider. The caption above the plot notes this. The window always
+   ends at the shot, even though `MatchClock` only resolves to seconds and
+   rebounds can still follow in the same second.
+4. Under **Anzeige**, toggle individual layers: passes, puck control, skating
+   paths of both teams, start polygon, and shot polygon.
+5. Under **Frames**, the attacking and defending skating paths can be played
+   independently up to a chosen frame. Each player's final position stays
+   visible.
+6. The plot can be downloaded as a PNG; in the debug section the scenario can
+   also be downloaded as CSV.
+
+## Data format
+
+An event CSV with one row per event is expected. Relevant columns:
+
+| Column | Meaning |
 |---|---|
-| `Period`, `MatchClock`, `Timestamp` | Zeitachse; `MatchClock` in Sekunden, aufwärts zählend |
+| `Period`, `MatchClock`, `Timestamp` | Timeline; `MatchClock` in seconds, counting up |
 | `EventType` | `Shot`, `Pass`, `PuckControl`, `Faceoff`, `Clear`, `BluelineCrossing` |
-| `EventPrimaryTeam` | `Home` / `Away`; grenzt die Schussliste auf das Team in Überzahl ein |
-| `PuckControlState` | `HomeControl` / `AwayControl` / `Loose` / `Contested`; schneidet das Fenster am letzten Besitzwechsel ab |
-| `TeamStrength` | Filter auf `5v4` / `4v5` |
-| `TeamStrengthType` | `HomePowerplay` / `AwayPowerplay`, bestimmt die Teamrollen |
-| `EventPosition` | `HomeTeamZone` / `AwayTeamZone` / `NeutralZone`, richtet das Rink aus |
-| `EventStartCoordinate`, `EventEndCoordinate` | `"x,y"` in Metern |
-| `StartPlayerCoordinates1`–`12` | Spielerpositionen `"x,y"` in Metern |
-| `StartPlayerId1`–`12`, `StartPlayerName1`–`12`, `StartPlayerTeam1`–`12` | Spielerzuordnung, Team ist `Home` oder `Away` |
-| `ShotResult`, `EventPrimaryPlayerName` | Für Label und Legende |
+| `EventPrimaryTeam` | `Home` / `Away`; limits the shot list to the team on the power play |
+| `PuckControlState` | `HomeControl` / `AwayControl` / `Loose` / `Contested`; cuts the window at the last possession change |
+| `TeamStrength` | Filter on `5v4` / `4v5` |
+| `TeamStrengthType` | `HomePowerplay` / `AwayPowerplay`, determines team roles |
+| `EventPosition` | `HomeTeamZone` / `AwayTeamZone` / `NeutralZone`, orients the rink |
+| `EventStartCoordinate`, `EventEndCoordinate` | `"x,y"` in metres |
+| `StartPlayerCoordinates1`–`12` | Player positions `"x,y"` in metres |
+| `StartPlayerId1`–`12`, `StartPlayerName1`–`12`, `StartPlayerTeam1`–`12` | Player assignment; team is `Home` or `Away` |
+| `ShotResult`, `EventPrimaryPlayerName` | For label and legend |
 
-Alle Koordinaten werden intern von Metern in Feet umgerechnet, weil
-`hockey_rink` in Feet arbeitet. Leere oder unvollständige Koordinaten werden zu
-`NaN` und fallen aus der Visualisierung heraus, ohne die App abzubrechen.
+All coordinates are converted from metres to feet internally because
+`hockey_rink` works in feet. Empty or incomplete coordinates become `NaN` and
+drop out of the visualisation without crashing the app.
 
-Beispieldaten liegen unter `../csv/<match>/<n>.csv`.
+Sample data lives under `../csv/<match>/<n>.csv`.
 
-## Module
+## Modules
 
-| Datei | Aufgabe |
+| File | Role |
 |---|---|
-| `app.py` | Streamlit-UI, Widgets, Caching, Downloads |
-| `parsing.py` | Powerplay-Filter, Schussliste, Zeitfenster, Dropdown-Labels |
-| `preshot.py` | Koordinaten-Aufbereitung, Torhüter-Erkennung, Matplotlib-Plot |
+| `app.py` | Streamlit UI, widgets, caching, downloads |
+| `parsing.py` | Power-play filter, shot list, time window, dropdown labels |
+| `preshot.py` | Coordinate prep, goalie detection, Matplotlib plot |
+| `report.py` | Written project documentation as a Streamlit report |
 
-## Torhüter-Erkennung
+## Goalie detection
 
-Torhüter werden nicht aus den Daten gelesen, sondern über die mediane Distanz
-zum eigenen Tor bestimmt (Grenze: 12 ft, `preshot.GOALIE_DISTANCE_FT`). Das
-läuft bewusst über den gesamten Powerplay-Datensatz statt über ein einzelnes
-Szenario, weil wenige Frames für eine stabile Erkennung nicht reichen. Ergebnis
-ist eine Menge pro Team, damit Torhüterwechsel im Spielverlauf abgedeckt sind.
+Goalies are not read from the data. They are identified by median distance to
+their own net (threshold: 12 ft, `preshot.GOALIE_DISTANCE_FT`). This runs over
+the full power-play dataset rather than a single scenario, because a few frames
+are not enough for a stable detection. The result is a set per team, so goalie
+changes during the game are covered.
 
-Erkannte Torhüter werden aus den Laufwegen und Polygonen herausgefiltert. Wird
-für das verteidigende Team keiner erkannt, bleiben die Polygone leer, weil
-`draw_structure_polygon` genau vier Spieler pro Frame erwartet – die App zeigt
-in diesem Fall eine Warnung.
+Detected goalies are filtered out of skating paths and polygons. If none is
+detected for the defending team, the polygons stay empty because
+`draw_structure_polygon` expects exactly four players per frame – the app shows
+a warning in that case.
 
 ## Performance
 
-Ein Rerun kostete ursprünglich rund 780 ms, wovon der Plot den grössten Teil
-ausmachte. Drei Stellen sind dafür angepasst:
+A rerun originally cost around 780 ms, most of it in the plot. Three places
+were adjusted:
 
-- **`preshot.skip_patch_limits`**: `rink.draw` legt rund 70 Polygone mit je
-  einigen hundert Vertices an, für die matplotlib in `add_patch` die
-  Bezier-Extrema auflöst, um `dataLim` zu aktualisieren. Diese Grenzen
-  überschreibt `hockey_rink` danach selbst per `set_xlim`/`set_ylim`. Der
-  Context-Manager schaltet die Berechnung für den Draw ab: 290 ms → 25 ms bei
-  pixelidentischem Ergebnis.
-- **Ein PNG statt zwei**: `st.pyplot` rendert intern selbst ein PNG. Die App
-  erzeugt das Bild jetzt einmal in `render_scenario_png` und nutzt es für
-  Anzeige (`st.image`) und Download-Button gemeinsam.
-- **`@st.fragment` auf `render_visualisation`**: Checkboxen und Frame-Regler
-  lösen nur einen Fragment-Rerun aus, das Parsen der Datei und die
-  Torhütererkennung laufen dabei nicht erneut.
+- **`preshot.skip_patch_limits`**: `rink.draw` creates about 70 polygons with a
+  few hundred vertices each. In `add_patch`, matplotlib resolves Bezier extrema
+  to update `dataLim`. `hockey_rink` then overwrites those limits itself via
+  `set_xlim`/`set_ylim`. The context manager turns that calculation off for the
+  draw: 290 ms → 25 ms with a pixel-identical result.
+- **One PNG instead of two**: `st.pyplot` internally renders a PNG of its own.
+  The app now produces the image once in `render_scenario_png` and reuses it
+  for display (`st.image`) and the download button.
+- **`@st.fragment` on `render_visualisation`**: Checkboxes and frame sliders
+  only trigger a fragment rerun; parsing the file and detecting goalies do not
+  run again.
 
-Gecacht wird das CSV-Einlesen, die Torhütererkennung und das gerenderte PNG.
-`st.cache_data` hasht nur den Bytecode der dekorierten Funktion, nicht den von
-`parsing.py` und `preshot.py`. Damit Änderungen dort trotzdem greifen, gibt
-`module_stamp()` den Zeitstempel beider Module als Cache-Key mit – gecachte
-Ergebnisse verfallen also automatisch beim Speichern.
+CSV reading, goalie detection, and the rendered PNG are cached. `st.cache_data`
+hashes only the bytecode of the decorated function, not that of `parsing.py`
+and `preshot.py`. So that changes there still take effect, `module_stamp()`
+passes both modules' timestamps as a cache key – cached results therefore
+expire automatically on save.
