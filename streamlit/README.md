@@ -1,9 +1,13 @@
-# Pre-Shot Situation (AI generated)
+# Pre-Shot Situation
+
+> **Hinweis:** Dieses README ist eine **KI-generierte Zusammenfassung** des
+> Projekts. Es beschreibt den Stand des Codes, ersetzt aber keine manuelle
+> Prüfung.
 
 Streamlit-App zur Analyse der Sekunden vor einem Powerplay-Schuss. Aus einem
 Spiel-CSV werden alle Schüsse in Überzahl (5v4 / 4v5) extrahiert; für einen
 ausgewählten Schuss zeichnet die App die Laufwege beider Teams, die
-Puck-Aktionen und die Verteidigungsstruktur auf ein NHL-Rink.
+Puck-Aktionen und die Verteidigungsstruktur auf ein IIHF-Rink.
 
 ## Setup
 
@@ -24,7 +28,7 @@ streamlit run app.py
 ```
 
 `parsing.py` und `preshot.py` werden als lokale Module importiert, die App muss
-darum aus dem Ordner `streamlit_app/` gestartet werden.
+darum aus dem Ordner `streamlit/` gestartet werden.
 
 ## Bedienung
 
