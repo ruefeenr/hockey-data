@@ -8,7 +8,8 @@ from pathlib import Path
 
 start_time = datetime.datetime.now()
 
-# report.py lives in streamlit/; data files (csv, images, autoparse_csv) are at the repo root.
+# report.py lives in streamlit/; match CSVs, images and scenario exports
+# sit at the repo root (data/, images/, work/autoparse_csv/).
 ROOT = Path(__file__).resolve().parent.parent
 
 ###############################################
@@ -102,7 +103,7 @@ def plot_basic(structure_df, players):
 
     return ax.figure
 
-scenario_df = import_prep_data(ROOT / "autoparse_csv/canada_v_hcd_shotData1.csv", [1,2,3,4,5])
+scenario_df = import_prep_data(ROOT / "work/autoparse_csv/canada_v_hcd_shotData1.csv", [1,2,3,4,5])
 
 ###############################################
 ################ Streamlit Display
@@ -194,10 +195,10 @@ st.markdown("""
 """)# Data preprocessing
 
 st.code("""
-sample_data_df = pd.read_csv("csv/canada_v_hcd/canada_v_hcd.csv")
+sample_data_df = pd.read_csv("data/canada_v_hcd.csv")
 sample_data_df[0:20]
 """)
-sample_data_df = pd.read_csv(ROOT / "csv/canada_v_hcd/canada_v_hcd.csv")
+sample_data_df = pd.read_csv(ROOT / "data/canada_v_hcd.csv")
 sample_data_df[0:20]
 
 st.markdown("""
