@@ -116,18 +116,17 @@ st.sidebar.markdown("""
         - [Defensive Structures](#defensive-structures-provided-by-hc-davos)
     - [Data Preprocessing](#data-preprocessing)
         - [Filtering](#filtering)
-    - [Initial Visualization](#initial-visualisation)
+    - [Visualization](##visualisation)
         - [Basic Visualization](#basic-visualisation)
-        - [Intermediate Data Visualization](#intermediate-data-visualization)
+        - [Advanced Visuals](#advanced-visuals)
         - [Incorporation of Interactive Elements](#incorporation-of-interactive-elements)
-    - [Feedback from HC Davos :red-badge[To Write]](#feedback-from-hc-davos)
-    - [Final Data Visualization :red-badge[To Write]](#final-data-visualization)
+        - [Feedback from HC Davos](#feedback-from-hc-davos)
     - [Incorrect Steps](#incorrect-steps)
         - [Scenario Discovery Algorithm](#scenario-discovery-algorithm)
         - [Mass Player Plotting](#mass-player-plotting)
         - [Directional Arrows](#directional-arrows)
-    - [Future Steps :red-badge[To Write]](#future-steps)
-    - [Conclusion :yellow-badge[Review]](#conclusion)
+    - [Future Steps](#future-steps)
+    - [Conclusion](#conclusion)
     - [AI Disclosure](#ai-disclosure)
         
         
@@ -141,7 +140,7 @@ st.markdown("""
             Sports Data Analytics - FS2026    
             Instructor: **Martin Rumo**  
             Hochschule Luzern  
-            2026-09-04 :blue-badge[Update prior to submission]   
+            2026-09-22 
             
             [GitHub Repo](https://github.com/ruefeenr/hockey-data) - run interactive Streamlit app with `streamlit run streamlit/app.py` from project directory.  
             [Web App](https://hockey-data-ekm32rc9v2uxnnnpg23vly.streamlit.app/)
@@ -198,7 +197,11 @@ st.code("""
 sample_data_df = pd.read_csv("data/canada_v_hcd.csv")
 sample_data_df[0:20]
 """)
+<<<<<<< Updated upstream
 sample_data_df = pd.read_csv(ROOT / "data/canada_v_hcd.csv")
+=======
+sample_data_df = pd.read_csv("data/canada_v_hcd.csv")
+>>>>>>> Stashed changes
 sample_data_df[0:20]
 
 st.markdown("""
@@ -260,7 +263,7 @@ for single_shot in shot_rows:       # reviews each shot which occurs during powe
 """) # code parsing full game
 
 st.markdown("""
-        ## Initial Visualisation
+        ## Visualisations
         Throughout this project, we project player data using the `hockey_rink` package. A rink is easily displayed using:
 """) ## md inital viz
 
@@ -316,7 +319,7 @@ def img_plot_more_players():
 st.pyplot(img_plot_more_players())
 
 st.markdown("""
-        ### Intermediate Data Visualization
+        ### Advanced Visuals
         Developments in the visualization progressed well, to a point where the team felt that the visualizations were able to provide an informative overview of any single play. Several new, key elements include:
         - **Differentiation between passing and puck movements:** Puck movements are shown in a wavy black arrow, while passes are displayed in solid black lines. Initially, both passes were in a red color, but this was changed to avoid confusion against ice markings.
         - **Shot Location:** The location of the where the shot was taken is marked on the map with a yellow star. Additionally, the legend of the visual provides information on what the result of that shot was - a goal, a save, block, or a miss.
@@ -324,7 +327,7 @@ st.markdown("""
             Players are color coded to their team (either purple or green, chosen to avoid clashing against other colored elements of the visual).
             Showing the movements of the players and the puck alike allows the viewer to visually identify how the play evolved, and how players shifted their positions.
         - **Structure Shading:** Shading was implemented to highlight and visually identify the structure of the defensive team for the viewer. Like the player tracks, the shading is time dependant, highlighting the first event frame in the lightest color and the last event frame in the darkest color.
-                Plotting the structures from multiple time moments additionally gives the benefit of showing overlapping areas in darker colors, as those are locations which have been under continous control by the defensive team. This is well shown in example 2. :blue-badge[Reference]
+                Plotting the structures from multiple time moments additionally gives the benefit of showing overlapping areas in darker colors, as those are locations which have been under continuous control by the defensive team. This is well shown in example 2.
                 This structure was challenging to implement, as the algorithm had to be able to identify which players were relevant to the scenario as the goaltender is always to be excluded.         
         
         **Scenario 1**  
@@ -371,13 +374,10 @@ if _interactive_img.exists():
     st.image(str(_interactive_img), caption="Interactive elements which the user can toggle. Panel 1 shows the scenario selection panel being closed, and Panel 2 shows it being open.")
 
 st.markdown("""
-        ## Feedback from HC Davos
+        ### Feedback from HC Davos
+        Unfortunately, we were unable to receive feedback from HC Davos for the purposes of this submission in time.
 """) #md feedback from HC Davos
 
-st.markdown("""
-        ## Final Data Visualization
-        :red-badge[TODO] Can import the code from App or take the screenshots.
-""") # Final Data Visualization
 
 st.markdown("""
         ## Incorrect Steps
@@ -406,13 +406,15 @@ st.markdown("""
          The method outlined to solve this issue is multifold: 
          - A light opacity polygon connects all defensive players, to outline the defensive structure. It can show both the structure at the start and end of the play.
          - Player positioning dots are connected using solid lines, in increasing opacity, which effectively plots an additional time dimension. The audience, as a result of this, can now see how the play developed over time through the movement of the puck and players.
+         
+         Through developing the mass player plots, we realized that in this case, it is ideal to minimize the amount of information which is presented to the user, which still allows for the transmission of information.
 """) ## md mass player plotting 2
 
 
 st.markdown("""
         ### Directional Arrows
-        During the intermediate stage of the project, we felt that adding directional arrows to player movements would give an additional dimmension of details about the actions players took throughout the play. 
-        Once implemented, the team came to the conclusion that the arrows did not add addititional useful information to the scenario, but rather added to clutter and disorganization that made the diagram harder to read.
+        During the intermediate stage of the project, we felt that adding directional arrows to player movements would give an additional dimension of details about the actions players took throughout the play. 
+        Once implemented, the team came to the conclusion that the arrows did not add additional useful information to the scenario, but rather added to clutter and disorganization that made the diagram harder to read.
         Additionally, if a player stood still or multiple lines are captured for a single moment, arrows for a player would overlap. On occasion, some data points did not include directional data for some or all players, leading to a unconsistent visual.
         
         Example:   
@@ -425,17 +427,25 @@ st.image(
 
 st.markdown("""
         ## Future Steps 
-        Later :red-badge[ToDo - after HC Davos feedback]
+        Unfortunately, as mentioned above, we were unable to receive timely feedback from HC Davos to inform our future steps for this project. Even without this feedback, there are several areas which we would like to further investigate in the future. Primarily, this would rely on being able to access additional data.
+        At present, we only had access to three game-datasets, which did allow us to create a framework and technical application for the display and analysis for a coaching member, but it did not allow us to fulfil the goals of the project as outlined by HC Davos.
+        Under ideal circumstances, such as if we were able to access the event logs of each game within the National League, there are a number of potential avenues to review, such as:
+        - **Creating Play Heatmaps:** An increased amount of data could be used to compile additional statistical maps, such as where primary and secondary assists come from, based on the location of a shot.
+        - **Automatic Structure Detection:** Automatically detecting and labeling plays where defensive structures occur, through machine learning models. Data could be used in aggregate for coaches to dictate powerplay strategy, or as individual scenarios to coach players.
+        - **Critical Moments Detection:** Create models which could automatically identify and label 'critical moments', which could be used as examples during coaching sessions.
+        - **Enhanced Game Strategy:** Automatic strategic analysis of opponents playing styles, weaknesses, and strengths to inform coaches and players of key information prior to games. This would likely encompass several of the above ideas and would require integration of different external data sources.  
+        
+        We realize that while this project has limited applications at the moment, there is significant potential with this data. From integrating game-data into helping coaches be more effective, describing game statistics in greater detail, and augmenting the fan experience through real-time interactive elements, this data has the power to significantly impact how ice hockey is played and enjoyed, alike.
 """) #future steps
 
 st.markdown("""
         ## Conclusion 
-        At the start of the project, the request that came from HC Davos was to use analytics and statistics to better inform them of where other teams were vonurable, and how HC Davos could adjust their powerplay strategy to stay competitive in the league. Unfortunately, due to the limited amounts of data provided, we were unable to directly fulfil this request.
+        At the start of the project, the request that came from HC Davos was to use analytics and statistics to better inform them of where other teams were vulnerable, and how HC Davos could adjust their powerplay strategy to stay competitive in the league. Unfortunately, due to the limited amounts of data provided, we were unable to directly fulfil this request.
         Despite this, we were able to develop an analytics platform that we belive has the value to deliver on valuable insights for any team which were to employ it. The platform allows any coach to upload a game's event dataset, and within seconds, they are able to analyze their teams performance throughout the game.
         One of the strengths of this platform is that it removes all technical understanding to be able to access the data, allowing it to be used by any coach or player to quickly access new insights and which may not be accessible through traditional video platforms.
         
-        Hockey is a very fast moving game, where plays develop extremely quickly and with fluidity. Coming into this project, and particularly once we knew that there would only be limited data access, we knew that we that a succesful project would hinge on developing a platform rather than trying to draw insights from only three games. 
-        The platform approach allowed us to prepare the infrastructure, while a coach is able to apply their deep understanding and knowledge of hockey on top of the data - ultimately it is not just about building an insights platform, but also opening access to those who have the ability to turn interactive plots into real, game-ready insights.     
+        Hockey is a very fast moving game, where plays develop extremely quickly and with fluidity. Coming into this project, and particularly once we knew that there would only be limited data access, we knew that a successful project would hinge on developing a platform rather than trying to draw insights from only three games. 
+        The platform approach allowed us to prepare the infrastructure, while a coach is able to apply their deep understanding and knowledge of hockey on top of the data. Ultimately, it is not just about building an insights platform, but also opening access to those who have the ability to turn interactive plots into real, game-ready insights.     
         
         Lastly, we want to provide a large thank you to HC Davos, in particular to Dylan Stanley and Martin Zöllner for providing the project topic, sample data, and expertise.
 """) #conclusion
@@ -443,34 +453,14 @@ st.markdown("""
 
 
 st.markdown("""
+           ------
+           
             ### AI Disclosure:
             Throughout this project, artificial intelligence was used for the purposes of code troubleshooting and code completion. 
             AI was also used to converting existing (handwritten) code from the interactive Jupyter format into the interactive Streamlit format. 
             Lastly, AI was used to automatically generate a ReadMe file for the GitHub repo.
 """) # ai disclosure
 
-
-st.markdown("""
-        ------
-        ## Sections to write
-        - Background / Objectives :green-badge[Done]
-        - preprocessing steps :green-badge[Done]
-            - filtering :green-badge[Done]
-        - Initial data vis :green-badge[Done]
-            - rink package :green-badge[Done]
-        - Feedback from HcDavos :red-badge[TODO]
-        - Final data viz :green-badge[Done - needs to be renamed from intermediate vis]
-            - gallery with plots
-            - tactical explaination of what happened, how this can be used for exaimination.
-        - steps which we took which were incorrect (thought process) :yellow-badge[In-Progress]
-            - weird preprocessing method (with between blueline filtering) :green-badge[Done]
-            - How we attempted positions without history (mass defence plots) :green-badge[Done]
-            - Puckcontrol vs. pass :red-bagdge[Todo? - this section is getting really long]
-            - directions :green-badge[Done]
-        - future steps :red-badge[TODO - wait for HCD advice]
-        - Conclusion :red-badge[TODO - current item to write]
-
-""")
 
 load_time = datetime.datetime.now() - start_time
 f"Load time: {load_time.seconds}s"
