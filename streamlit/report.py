@@ -197,11 +197,11 @@ st.code("""
 sample_data_df = pd.read_csv("data/canada_v_hcd.csv")
 sample_data_df[0:20]
 """)
-<<<<<<< Updated upstream
+# <<<<<<< Updated upstream
 sample_data_df = pd.read_csv(ROOT / "data/canada_v_hcd.csv")
-=======
+#=======
 sample_data_df = pd.read_csv("data/canada_v_hcd.csv")
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
 sample_data_df[0:20]
 
 st.markdown("""
