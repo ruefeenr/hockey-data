@@ -31,7 +31,7 @@ streamlit run app.py
 started from the `streamlit/` directory.
 
 Project documentation (objectives, preprocessing, visualisation steps, and
-known mistakes) lives in `report.py`, itself a Streamlit app:
+known mistakes) lives in `streamlit/report.py`, itself a Streamlit app:
 
 ```bash
 cd streamlit
@@ -87,16 +87,16 @@ All coordinates are converted from metres to feet internally because
 `hockey_rink` works in feet. Empty or incomplete coordinates become `NaN` and
 drop out of the visualisation without crashing the app.
 
-Sample data lives under `../csv/<match>/<n>.csv`.
+Sample data lives under `data/`.
 
 ## Modules
 
 | File | Role |
 |---|---|
-| `app.py` | Streamlit UI, widgets, caching, downloads |
-| `parsing.py` | Power-play filter, shot list, time window, dropdown labels |
-| `preshot.py` | Coordinate prep, goalie detection, Matplotlib plot |
-| `report.py` | Written project documentation as a Streamlit report |
+| `streamlit/app.py` | Streamlit UI, widgets, caching, downloads |
+| `streamlit/parsing.py` | Power-play filter, shot list, time window, dropdown labels |
+| `streamlit/preshot.py` | Coordinate prep, goalie detection, Matplotlib plot |
+| `streamlit/report.py` | Written project documentation as a Streamlit report |
 
 ## Goalie detection
 
